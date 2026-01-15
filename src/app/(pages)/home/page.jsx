@@ -1,11 +1,28 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import ResumeUplaodDailog from "@/components/Home/ResumeUplaodDailog";
 export default function Page() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-muted px-4">
       <div className="grid gap-6 w-full max-w-4xl md:grid-cols-3">
-
         {/* Upload Resume */}
         <Card className="hover:shadow-lg transition cursor-pointer">
           <CardHeader>
@@ -15,9 +32,7 @@ export default function Page() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <Button className="w-full">
-              Upload Resume
-            </Button>
+            <ResumeUplaodDailog/>
           </CardContent>
         </Card>
 
@@ -40,9 +55,7 @@ export default function Page() {
         <Card className="hover:shadow-lg transition cursor-pointer">
           <CardHeader>
             <CardTitle>Not Decided Yet</CardTitle>
-            <CardDescription>
-              Explore options and decide later
-            </CardDescription>
+            <CardDescription>Explore options and decide later</CardDescription>
           </CardHeader>
           <CardContent>
             <Button variant="secondary" className="w-full">
@@ -50,8 +63,7 @@ export default function Page() {
             </Button>
           </CardContent>
         </Card>
-
       </div>
     </div>
-  )
+  );
 }
