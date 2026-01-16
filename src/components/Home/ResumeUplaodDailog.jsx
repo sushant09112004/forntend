@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -14,13 +15,17 @@ import {
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { useGemeni } from "@/hooks/useGemeni"
 
 export default function ResumeUploadDialog() {
+  const router = useRouter()
+  const { structureResume, loading: geminiLoading, error: geminiError } = useGemeni()
   const [file, setFile] = useState(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
   const [extractedText, setExtractedText] = useState(null)
   const [showResult, setShowResult] = useState(false)
+  const [structuring, setStructuring] = useState(false)
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -57,6 +62,11 @@ export default function ResumeUploadDialog() {
       if (data.success && data.data) {
         setExtractedText(data.data)
         setShowResult(true)
+        
+        // Automatically structure the resume with Gemini
+        if (data.data.text) {
+          await handleStructureResume(data.data.text)
+        }
       }
 
     } catch (err) {
@@ -64,6 +74,36 @@ export default function ResumeUploadDialog() {
       setError(err.message)
     } finally {
       setLoading(false)
+    }
+  }
+
+  const handleStructureResume = async (text) => {
+    try {
+      setStructuring(true)
+      setError(null)
+      
+      console.log("🤖 Structuring resume with Gemini...")
+      const structuredData = await structureResume(text)
+      
+      console.log("✅ Structured Data:", structuredData)
+      
+      // Store structured data in sessionStorage for edit page
+      if (typeof window !== "undefined") {
+        sessionStorage.setItem("structuredResume", JSON.stringify(structuredData))
+        sessionStorage.setItem("originalText", text)
+      }
+      
+      // Navigate to edit page after a short delay
+      setTimeout(() => {
+        router.push("/edit")
+      }, 1000)
+      
+    } catch (err) {
+      console.error("Error structuring resume:", err)
+      setError("Failed to structure resume: " + err.message)
+      // Still show the extracted text even if structuring fails
+    } finally {
+      setStructuring(false)
     }
   }
 
@@ -120,8 +160,8 @@ export default function ResumeUploadDialog() {
                   Cancel
                 </Button>
               </DialogClose>
-              <Button type="submit" disabled={loading || !file}>
-                {loading ? "Extracting..." : "Extract Text"}
+              <Button type="submit" disabled={loading || !file || structuring}>
+                {loading ? "Extracting..." : structuring ? "Structuring..." : "Extract Text"}
               </Button>
             </DialogFooter>
           </form>
@@ -135,6 +175,17 @@ export default function ResumeUploadDialog() {
             </DialogHeader>
 
             <div className="grid gap-4 py-4">
+              {structuring && (
+                <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                  <div className="flex items-center gap-3">
+                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-600"></div>
+                    <p className="text-sm text-blue-700">
+                      Structuring resume with AI... This may take a moment.
+                    </p>
+                  </div>
+                </div>
+              )}
+              
               {extractedText && (
                 <>
                   <div className="flex gap-4 text-sm text-gray-600">
@@ -142,11 +193,13 @@ export default function ResumeUploadDialog() {
                     <span>Characters: {extractedText.text?.length || 0}</span>
                   </div>
                   
-                  <div className="border rounded-lg p-4 bg-gray-50 max-h-[400px] overflow-y-auto">
-                    <pre className="whitespace-pre-wrap text-sm font-mono">
-                      {extractedText.text || "No text found"}
-                    </pre>
-                  </div>
+                  {!structuring && (
+                    <div className="border rounded-lg p-4 bg-gray-50 max-h-[400px] overflow-y-auto">
+                      <pre className="whitespace-pre-wrap text-sm font-mono">
+                        {extractedText.text || "No text found"}
+                      </pre>
+                    </div>
+                  )}
 
                   {extractedText.info && (
                     <details className="text-sm">
