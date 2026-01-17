@@ -6,15 +6,16 @@
 
 // // Dynamically import DragDropContext to avoid SSR issues
 // const DragDropContext = dynamic(
-//   () => import("react-beautiful-dnd").then((mod) => mod.DragDropContext),
+//   () => import("@hello-pangea/dnd")
+// .then((mod) => mod.DragDropContext),
 //   { ssr: false }
 // );
 // const Droppable = dynamic(
-//   () => import("react-beautiful-dnd").then((mod) => mod.Droppable),
+//   () => import("@hello-pangea/dnd").then((mod) => mod.Droppable),
 //   { ssr: false }
 // );
 // const Draggable = dynamic(
-//   () => import("react-beautiful-dnd").then((mod) => mod.Draggable),
+//   () => import("@hello-pangea/dnd").then((mod) => mod.Draggable),
 //   { ssr: false }
 // );
 
