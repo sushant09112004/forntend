@@ -23,6 +23,8 @@ export default function Home() {
     if (typeof window === "undefined") return;
     localStorage.removeItem("user");
     localStorage.removeItem("token");
+    // Dispatch event to update sidebar
+    window.dispatchEvent(new Event("userUpdated"));
     setUser(null);
   };
 
