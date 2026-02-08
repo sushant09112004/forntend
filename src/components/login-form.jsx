@@ -101,6 +101,8 @@ export function LoginForm({ className, ...props }) {
       if (typeof window !== "undefined") {
         localStorage.setItem("token", data.token);
         localStorage.setItem("user", JSON.stringify(data.user));
+        // Dispatch event to update sidebar
+        window.dispatchEvent(new Event("userUpdated"));
       }
 
       router.push("/");
@@ -136,6 +138,8 @@ export function LoginForm({ className, ...props }) {
       if (typeof window !== "undefined") {
         localStorage.setItem("token", data.token);
         localStorage.setItem("user", JSON.stringify(data.user));
+        // Dispatch event to update sidebar
+        window.dispatchEvent(new Event("userUpdated"));
       }
 
       router.push("/");

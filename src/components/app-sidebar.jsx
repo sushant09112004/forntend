@@ -1,6 +1,7 @@
 "use client"
 
 import * as React from "react"
+import { useEffect, useState } from "react"
 import {
   AudioWaveform,
   BookOpen,
@@ -28,11 +29,6 @@ import {
 
 // This is sample data.
 const data = {
-  user: {
-    name: "shadcn",
-    email: "m@example.com",
-    avatar: "/avatars/shadcn.jpg",
-  },
   teams: [
     {
       name: "Acme Inc",
@@ -159,6 +155,64 @@ const data = {
 export function AppSidebar({
   ...props
 }) {
+  const [user, setUser] = useState(null)
+
+  useEffect(() => {
+    // Get user data from localStorage
+    if (typeof window !== "undefined") {
+      const storedUser = localStorage.getItem("user")
+      if (storedUser) {
+        try {
+          const userData = JSON.parse(storedUser)
+          // Map the user data to match the expected format
+          setUser({
+            name: userData.username || userData.name,
+            username: userData.username,
+            email: userData.email,
+            avatar: userData.avatar || null,
+          })
+        } catch (err) {
+          console.error("Error parsing user data:", err)
+        }
+      }
+    }
+  }, [])
+
+  // Listen for storage changes (e.g., when user logs in/out in another tab)
+  // Also listen for custom events for same-tab updates
+  useEffect(() => {
+    const handleStorageChange = () => {
+      if (typeof window !== "undefined") {
+        const storedUser = localStorage.getItem("user")
+        if (storedUser) {
+          try {
+            const userData = JSON.parse(storedUser)
+            setUser({
+              name: userData.username || userData.name,
+              username: userData.username,
+              email: userData.email,
+              avatar: userData.avatar || null,
+            })
+          } catch (err) {
+            console.error("Error parsing user data:", err)
+          }
+        } else {
+          setUser(null)
+        }
+      }
+    }
+
+    // Listen for storage events (other tabs)
+    window.addEventListener("storage", handleStorageChange)
+    // Listen for custom events (same tab)
+    window.addEventListener("userUpdated", handleStorageChange)
+    
+    return () => {
+      window.removeEventListener("storage", handleStorageChange)
+      window.removeEventListener("userUpdated", handleStorageChange)
+    }
+  }, [])
+
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
@@ -169,7 +223,7 @@ export function AppSidebar({
         <NavProjects projects={data.projects} />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={data.user} />
+        <NavUser user={user} />
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>

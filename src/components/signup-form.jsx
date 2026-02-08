@@ -67,6 +67,8 @@ export function SignupForm({ className, ...props }) {
       if (typeof window !== "undefined") {
         localStorage.setItem("token", data.token);
         localStorage.setItem("user", JSON.stringify(data.user));
+        // Dispatch event to update sidebar
+        window.dispatchEvent(new Event("userUpdated"));
       }
 
       // Redirect to main page (or editor)
