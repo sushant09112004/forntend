@@ -7,7 +7,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import ResumePreview from "@/components/ResumePreview";
-
+import Collapsiblebox from "@/components/editorpages/Collapsiblebox";
+import CollapsibleExperience from "@/components/editorpages/CollapsibleExperience";
 export default function EditPage() {
   const router = useRouter();
   const [structuredData, setStructuredData] = useState(null);
@@ -44,7 +45,11 @@ export default function EditPage() {
   // Auto-save to sessionStorage whenever data changes
   useEffect(() => {
     if (structuredData && typeof window !== "undefined") {
-      sessionStorage.setItem("structuredResume", JSON.stringify(structuredData));
+      sessionStorage.setItem(
+        "structuredResume",
+        JSON.stringify(structuredData),
+      );
+      console.log(structuredData);
     }
   }, [structuredData]);
 
@@ -53,9 +58,12 @@ export default function EditPage() {
       const newData = { ...prev };
       if (Array.isArray(newData[section])) {
         newData[section] = newData[section].map((item, i) =>
-          i === index ? { ...item, [field]: value } : item
+          i === index ? { ...item, [field]: value } : item,
         );
-      } else if (typeof newData[section] === "object" && newData[section] !== null) {
+      } else if (
+        typeof newData[section] === "object" &&
+        newData[section] !== null
+      ) {
         newData[section] = { ...newData[section], [field]: value };
       } else {
         newData[section] = value;
@@ -67,9 +75,13 @@ export default function EditPage() {
   const updateArrayField = (section, value) => {
     setStructuredData((prev) => ({
       ...prev,
-      [section]: typeof value === "string" 
-        ? value.split(",").map((s) => s.trim()).filter((s) => s)
-        : value,
+      [section]:
+        typeof value === "string"
+          ? value
+              .split(",")
+              .map((s) => s.trim())
+              .filter((s) => s)
+          : value,
     }));
   };
 
@@ -89,7 +101,10 @@ export default function EditPage() {
 
   const handleSave = () => {
     if (typeof window !== "undefined") {
-      sessionStorage.setItem("structuredResume", JSON.stringify(structuredData));
+      sessionStorage.setItem(
+        "structuredResume",
+        JSON.stringify(structuredData),
+      );
       alert("Resume saved successfully!");
     }
   };
@@ -160,9 +175,7 @@ export default function EditPage() {
             <p className="text-gray-600 mb-4">
               No structured resume data found. Please upload a resume first.
             </p>
-            <Button onClick={() => router.push("/home")}>
-              Go to Home
-            </Button>
+            <Button onClick={() => router.push("/home")}>Go to Home</Button>
           </CardContent>
         </Card>
       </div>
@@ -175,7 +188,9 @@ export default function EditPage() {
       <div className="bg-white border-b sticky top-0 z-10 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 md:px-8 py-4">
           <div className="flex justify-between items-center">
-            <h1 className="text-2xl md:text-3xl font-bold text-gray-900">Edit Resume</h1>
+            <h1 className="text-2xl md:text-3xl font-bold text-gray-900">
+              Edit Resume
+            </h1>
             <div className="flex gap-2 flex-wrap">
               <Button variant="outline" onClick={handleDownloadHTML} size="sm">
                 Download HTML
@@ -183,10 +198,16 @@ export default function EditPage() {
               <Button variant="outline" onClick={handleDownloadPDF} size="sm">
                 Download PDF
               </Button>
-              <Button variant="outline" onClick={() => router.push("/home")} size="sm">
+              <Button
+                variant="outline"
+                onClick={() => router.push("/home")}
+                size="sm"
+              >
                 Back
               </Button>
-              <Button onClick={handleSave} size="sm">Save</Button>
+              <Button onClick={handleSave} size="sm">
+                Save
+              </Button>
             </div>
           </div>
         </div>
@@ -198,404 +219,528 @@ export default function EditPage() {
           {/* Left Column - Edit Form */}
           <div className="space-y-6 overflow-y-auto max-h-[calc(100vh-120px)] pr-2">
             <div className="grid gap-6">
-          {/* Summary Section */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Professional Summary</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <textarea
-                value={structuredData.summary || ""}
+              {/* Summary Section */}
+             
+              <Collapsiblebox 
+                item={structuredData} 
                 onChange={(e) =>
                   setStructuredData((prev) => ({
                     ...prev,
                     summary: e.target.value,
                   }))
                 }
-                rows={4}
-                placeholder="Enter your professional summary..."
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
               />
-            </CardContent>
-          </Card>
-
-          {/* Experience Section */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Experience</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {structuredData.experience?.map((exp, index) => (
-                <div
-                  key={index}
-                  className="border rounded-lg p-4 space-y-3"
-                >
-                  <div className="grid grid-cols-2 gap-3">
+              {/* Experience Section */}
+              {/* <Card>
+                <CardHeader>
+                  <CardTitle>Experience</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  {structuredData.experience?.map((exp, index) => (
+                    <div
+                      key={index}
+                      className="border rounded-lg p-4 space-y-3"
+                    >
+                      <div className="grid grid-cols-2 gap-3">
+                        <div>
+                          <Label>Job Title</Label>
+                          <Input
+                            value={exp.title || ""}
+                            onChange={(e) =>
+                              updateField(
+                                "experience",
+                                index,
+                                "title",
+                                e.target.value,
+                              )
+                            }
+                          />
+                        </div>
+                        <div>
+                          <Label>Company</Label>
+                          <Input
+                            value={exp.company || ""}
+                            onChange={(e) =>
+                              updateField(
+                                "experience",
+                                index,
+                                "company",
+                                e.target.value,
+                              )
+                            }
+                          />
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-3 gap-3">
+                        <div>
+                          <Label>Location</Label>
+                          <Input
+                            value={exp.location || ""}
+                            onChange={(e) =>
+                              updateField(
+                                "experience",
+                                index,
+                                "location",
+                                e.target.value,
+                              )
+                            }
+                          />
+                        </div>
+                        <div>
+                          <Label>Start Date</Label>
+                          <Input
+                            value={exp.startDate || ""}
+                            onChange={(e) =>
+                              updateField(
+                                "experience",
+                                index,
+                                "startDate",
+                                e.target.value,
+                              )
+                            }
+                          />
+                        </div>
+                        <div>
+                          <Label>End Date</Label>
+                          <Input
+                            value={exp.endDate || ""}
+                            onChange={(e) =>
+                              updateField(
+                                "experience",
+                                index,
+                                "endDate",
+                                e.target.value,
+                              )
+                            }
+                          />
+                        </div>
+                      </div>
+                      <div>
+                        <Label>Description</Label>
+                        <textarea
+                          value={exp.description || ""}
+                          onChange={(e) =>
+                            updateField(
+                              "experience",
+                              index,
+                              "description",
+                              e.target.value,
+                            )
+                          }
+                          rows={3}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                        />
+                      </div>
+                      <Button
+                        variant="destructive"
+                        size="sm"
+                        onClick={() => removeItem("experience", index)}
+                      >
+                        Remove
+                      </Button>
+                    </div>
+                  ))}
+                  <Button
+                    variant="outline"
+                    onClick={() =>
+                      addItem("experience", {
+                        title: "",
+                        company: "",
+                        location: "",
+                        startDate: "",
+                        endDate: "",
+                        description: "",
+                      })
+                    }
+                  >
+                    + Add Experience
+                  </Button>
+                </CardContent>
+              </Card> */}
+              <CollapsibleExperience
+                structuredData={structuredData}
+                updateField={updateField}
+                addItem={addItem}
+                removeItem={removeItem}
+                />
+              {/* Projects Section */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>Projects</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  {structuredData.projects?.map((project, index) => (
+                    <div
+                      key={index}
+                      className="border rounded-lg p-4 space-y-3"
+                    >
+                      <div>
+                        <Label>Project Name</Label>
+                        <Input
+                          value={project.name || ""}
+                          onChange={(e) =>
+                            updateField(
+                              "projects",
+                              index,
+                              "name",
+                              e.target.value,
+                            )
+                          }
+                        />
+                      </div>
+                      <div>
+                        <Label>Description</Label>
+                        <textarea
+                          value={project.description || ""}
+                          onChange={(e) =>
+                            updateField(
+                              "projects",
+                              index,
+                              "description",
+                              e.target.value,
+                            )
+                          }
+                          rows={3}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                        />
+                      </div>
+                      <div>
+                        <Label>Technologies (comma separated)</Label>
+                        <Input
+                          value={
+                            Array.isArray(project.technologies)
+                              ? project.technologies.join(", ")
+                              : project.technologies || ""
+                          }
+                          onChange={(e) =>
+                            updateField(
+                              "projects",
+                              index,
+                              "technologies",
+                              e.target.value.split(",").map((s) => s.trim()),
+                            )
+                          }
+                        />
+                      </div>
+                      <Button
+                        variant="destructive"
+                        size="sm"
+                        onClick={() => removeItem("projects", index)}
+                      >
+                        Remove
+                      </Button>
+                    </div>
+                  ))}
+                  <Button
+                    variant="outline"
+                    onClick={() =>
+                      addItem("projects", {
+                        name: "",
+                        description: "",
+                        technologies: [],
+                      })
+                    }
+                  >
+                    + Add Project
+                  </Button>
+                </CardContent>
+              </Card>
+              {/* Achievements Section */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>Achievements</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <Label>Achievements (one per line or comma separated)</Label>
+                  <textarea
+                    value={
+                      Array.isArray(structuredData.achievements)
+                        ? structuredData.achievements.join("\n")
+                        : structuredData.achievements || ""
+                    }
+                    onChange={(e) =>
+                      updateArrayField(
+                        "achievements",
+                        e.target.value
+                          .split("\n")
+                          .map((s) => s.trim())
+                          .filter((s) => s),
+                      )
+                    }
+                    rows={6}
+                    placeholder="Enter achievements, one per line..."
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                  />
+                </CardContent>
+              </Card>
+              {/* Skills Section */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>Skills</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <Label>Skills (comma separated)</Label>
+                  <Input
+                    value={
+                      Array.isArray(structuredData.skills)
+                        ? structuredData.skills.join(", ")
+                        : structuredData.skills || ""
+                    }
+                    onChange={(e) => updateArrayField("skills", e.target.value)}
+                    placeholder="JavaScript, React, Node.js, ..."
+                  />
+                </CardContent>
+              </Card>
+              {/* Personal Info Section */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>Personal Information</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <Label>Job Title</Label>
+                      <Label>Name</Label>
                       <Input
-                        value={exp.title || ""}
+                        value={structuredData.personalInfo?.name || ""}
                         onChange={(e) =>
-                          updateField("experience", index, "title", e.target.value)
+                          updateField(
+                            "personalInfo",
+                            null,
+                            "name",
+                            e.target.value,
+                          )
                         }
+                        placeholder="Your Name"
                       />
                     </div>
                     <div>
-                      <Label>Company</Label>
+                      <Label>Email</Label>
                       <Input
-                        value={exp.company || ""}
+                        type="email"
+                        value={structuredData.personalInfo?.email || ""}
                         onChange={(e) =>
-                          updateField("experience", index, "company", e.target.value)
+                          updateField(
+                            "personalInfo",
+                            null,
+                            "email",
+                            e.target.value,
+                          )
                         }
+                        placeholder="your.email@example.com"
                       />
                     </div>
-                  </div>
-                  <div className="grid grid-cols-3 gap-3">
+                    <div>
+                      <Label>Phone</Label>
+                      <Input
+                        value={structuredData.personalInfo?.phone || ""}
+                        onChange={(e) =>
+                          updateField(
+                            "personalInfo",
+                            null,
+                            "phone",
+                            e.target.value,
+                          )
+                        }
+                        placeholder="+1 (555) 123-4567"
+                      />
+                    </div>
                     <div>
                       <Label>Location</Label>
                       <Input
-                        value={exp.location || ""}
+                        value={structuredData.personalInfo?.location || ""}
                         onChange={(e) =>
-                          updateField("experience", index, "location", e.target.value)
+                          updateField(
+                            "personalInfo",
+                            null,
+                            "location",
+                            e.target.value,
+                          )
                         }
+                        placeholder="City, State"
                       />
                     </div>
                     <div>
-                      <Label>Start Date</Label>
+                      <Label>LinkedIn</Label>
                       <Input
-                        value={exp.startDate || ""}
+                        value={structuredData.personalInfo?.linkedin || ""}
                         onChange={(e) =>
-                          updateField("experience", index, "startDate", e.target.value)
+                          updateField(
+                            "personalInfo",
+                            null,
+                            "linkedin",
+                            e.target.value,
+                          )
                         }
+                        placeholder="linkedin.com/in/yourprofile"
                       />
                     </div>
                     <div>
-                      <Label>End Date</Label>
+                      <Label>Website</Label>
                       <Input
-                        value={exp.endDate || ""}
+                        value={structuredData.personalInfo?.website || ""}
                         onChange={(e) =>
-                          updateField("experience", index, "endDate", e.target.value)
+                          updateField(
+                            "personalInfo",
+                            null,
+                            "website",
+                            e.target.value,
+                          )
                         }
+                        placeholder="yourwebsite.com"
                       />
                     </div>
                   </div>
-                  <div>
-                    <Label>Description</Label>
-                    <textarea
-                      value={exp.description || ""}
-                      onChange={(e) =>
-                        updateField("experience", index, "description", e.target.value)
-                      }
-                      rows={3}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
-                    />
-                  </div>
+                </CardContent>
+              </Card>
+              {/* Education Section */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>Education</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  {structuredData.education?.map((edu, index) => (
+                    <div
+                      key={index}
+                      className="border rounded-lg p-4 space-y-3 relative"
+                    >
+                      <Button
+                        variant="destructive"
+                        size="sm"
+                        className="absolute top-2 right-2"
+                        onClick={() => removeItem("education", index)}
+                      >
+                        Remove
+                      </Button>
+                      <div className="grid grid-cols-2 gap-3">
+                        <div>
+                          <Label>Degree</Label>
+                          <Input
+                            value={edu.degree || ""}
+                            onChange={(e) =>
+                              updateField(
+                                "education",
+                                index,
+                                "degree",
+                                e.target.value,
+                              )
+                            }
+                          />
+                        </div>
+                        <div>
+                          <Label>Institution</Label>
+                          <Input
+                            value={edu.institution || ""}
+                            onChange={(e) =>
+                              updateField(
+                                "education",
+                                index,
+                                "institution",
+                                e.target.value,
+                              )
+                            }
+                          />
+                        </div>
+                        <div>
+                          <Label>Location</Label>
+                          <Input
+                            value={edu.location || ""}
+                            onChange={(e) =>
+                              updateField(
+                                "education",
+                                index,
+                                "location",
+                                e.target.value,
+                              )
+                            }
+                          />
+                        </div>
+                        <div>
+                          <Label>Graduation Date</Label>
+                          <Input
+                            value={edu.graduationDate || ""}
+                            onChange={(e) =>
+                              updateField(
+                                "education",
+                                index,
+                                "graduationDate",
+                                e.target.value,
+                              )
+                            }
+                          />
+                        </div>
+                        <div>
+                          <Label>GPA</Label>
+                          <Input
+                            value={edu.gpa || ""}
+                            onChange={(e) =>
+                              updateField(
+                                "education",
+                                index,
+                                "gpa",
+                                e.target.value,
+                              )
+                            }
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  ))}
                   <Button
-                    variant="destructive"
-                    size="sm"
-                    onClick={() => removeItem("experience", index)}
+                    variant="outline"
+                    onClick={() =>
+                      addItem("education", {
+                        degree: "",
+                        institution: "",
+                        location: "",
+                        graduationDate: "",
+                        gpa: "",
+                      })
+                    }
                   >
-                    Remove
+                    + Add Education
                   </Button>
-                </div>
-              ))}
-              <Button
-                variant="outline"
-                onClick={() =>
-                  addItem("experience", {
-                    title: "",
-                    company: "",
-                    location: "",
-                    startDate: "",
-                    endDate: "",
-                    description: "",
-                  })
-                }
-              >
-                + Add Experience
-              </Button>
-            </CardContent>
-          </Card>
-
-          {/* Projects Section */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Projects</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {structuredData.projects?.map((project, index) => (
-                <div key={index} className="border rounded-lg p-4 space-y-3">
-                  <div>
-                    <Label>Project Name</Label>
-                    <Input
-                      value={project.name || ""}
-                      onChange={(e) =>
-                        updateField("projects", index, "name", e.target.value)
-                      }
-                    />
-                  </div>
-                  <div>
-                    <Label>Description</Label>
-                    <textarea
-                      value={project.description || ""}
-                      onChange={(e) =>
-                        updateField("projects", index, "description", e.target.value)
-                      }
-                      rows={3}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
-                    />
-                  </div>
-                  <div>
-                    <Label>Technologies (comma separated)</Label>
-                    <Input
-                      value={
-                        Array.isArray(project.technologies)
-                          ? project.technologies.join(", ")
-                          : project.technologies || ""
-                      }
-                      onChange={(e) =>
-                        updateField("projects", index, "technologies", e.target.value.split(",").map((s) => s.trim()))
-                      }
-                    />
-                  </div>
-                  <Button
-                    variant="destructive"
-                    size="sm"
-                    onClick={() => removeItem("projects", index)}
-                  >
-                    Remove
-                  </Button>
-                </div>
-              ))}
-              <Button
-                variant="outline"
-                onClick={() =>
-                  addItem("projects", {
-                    name: "",
-                    description: "",
-                    technologies: [],
-                  })
-                }
-              >
-                + Add Project
-              </Button>
-            </CardContent>
-          </Card>
-
-          {/* Achievements Section */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Achievements</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <Label>Achievements (one per line or comma separated)</Label>
-              <textarea
-                value={
-                  Array.isArray(structuredData.achievements)
-                    ? structuredData.achievements.join("\n")
-                    : structuredData.achievements || ""
-                }
-                onChange={(e) =>
-                  updateArrayField(
-                    "achievements",
-                    e.target.value.split("\n").map((s) => s.trim()).filter((s) => s)
-                  )
-                }
-                rows={6}
-                placeholder="Enter achievements, one per line..."
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
-              />
-            </CardContent>
-          </Card>
-
-          {/* Skills Section */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Skills</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <Label>Skills (comma separated)</Label>
-              <Input
-                value={
-                  Array.isArray(structuredData.skills)
-                    ? structuredData.skills.join(", ")
-                    : structuredData.skills || ""
-                }
-                onChange={(e) => updateArrayField("skills", e.target.value)}
-                placeholder="JavaScript, React, Node.js, ..."
-              />
-            </CardContent>
-          </Card>
-
-          {/* Personal Info Section */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Personal Information</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label>Name</Label>
+                </CardContent>
+              </Card>
+              {/* Certifications Section */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>Certifications</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <Label>Certifications (comma separated)</Label>
                   <Input
-                    value={structuredData.personalInfo?.name || ""}
-                    onChange={(e) => updateField("personalInfo", null, "name", e.target.value)}
-                    placeholder="Your Name"
+                    value={
+                      Array.isArray(structuredData.certifications)
+                        ? structuredData.certifications.join(", ")
+                        : structuredData.certifications || ""
+                    }
+                    onChange={(e) =>
+                      updateArrayField("certifications", e.target.value)
+                    }
+                    placeholder="AWS Certified, Google Cloud Professional, ..."
                   />
-                </div>
-                <div>
-                  <Label>Email</Label>
+                </CardContent>
+              </Card>
+              {/* Languages Section */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>Languages</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <Label>Languages (comma separated)</Label>
                   <Input
-                    type="email"
-                    value={structuredData.personalInfo?.email || ""}
-                    onChange={(e) => updateField("personalInfo", null, "email", e.target.value)}
-                    placeholder="your.email@example.com"
+                    value={
+                      Array.isArray(structuredData.languages)
+                        ? structuredData.languages.join(", ")
+                        : structuredData.languages || ""
+                    }
+                    onChange={(e) =>
+                      updateArrayField("languages", e.target.value)
+                    }
+                    placeholder="English, Spanish, French, ..."
                   />
-                </div>
-                <div>
-                  <Label>Phone</Label>
-                  <Input
-                    value={structuredData.personalInfo?.phone || ""}
-                    onChange={(e) => updateField("personalInfo", null, "phone", e.target.value)}
-                    placeholder="+1 (555) 123-4567"
-                  />
-                </div>
-                <div>
-                  <Label>Location</Label>
-                  <Input
-                    value={structuredData.personalInfo?.location || ""}
-                    onChange={(e) => updateField("personalInfo", null, "location", e.target.value)}
-                    placeholder="City, State"
-                  />
-                </div>
-                <div>
-                  <Label>LinkedIn</Label>
-                  <Input
-                    value={structuredData.personalInfo?.linkedin || ""}
-                    onChange={(e) => updateField("personalInfo", null, "linkedin", e.target.value)}
-                    placeholder="linkedin.com/in/yourprofile"
-                  />
-                </div>
-                <div>
-                  <Label>Website</Label>
-                  <Input
-                    value={structuredData.personalInfo?.website || ""}
-                    onChange={(e) => updateField("personalInfo", null, "website", e.target.value)}
-                    placeholder="yourwebsite.com"
-                  />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Education Section */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Education</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {structuredData.education?.map((edu, index) => (
-                <div key={index} className="border rounded-lg p-4 space-y-3 relative">
-                  <Button
-                    variant="destructive"
-                    size="sm"
-                    className="absolute top-2 right-2"
-                    onClick={() => removeItem("education", index)}
-                  >
-                    Remove
-                  </Button>
-                  <div className="grid grid-cols-2 gap-3">
-                    <div>
-                      <Label>Degree</Label>
-                      <Input
-                        value={edu.degree || ""}
-                        onChange={(e) => updateField("education", index, "degree", e.target.value)}
-                      />
-                    </div>
-                    <div>
-                      <Label>Institution</Label>
-                      <Input
-                        value={edu.institution || ""}
-                        onChange={(e) => updateField("education", index, "institution", e.target.value)}
-                      />
-                    </div>
-                    <div>
-                      <Label>Location</Label>
-                      <Input
-                        value={edu.location || ""}
-                        onChange={(e) => updateField("education", index, "location", e.target.value)}
-                      />
-                    </div>
-                    <div>
-                      <Label>Graduation Date</Label>
-                      <Input
-                        value={edu.graduationDate || ""}
-                        onChange={(e) => updateField("education", index, "graduationDate", e.target.value)}
-                      />
-                    </div>
-                    <div>
-                      <Label>GPA</Label>
-                      <Input
-                        value={edu.gpa || ""}
-                        onChange={(e) => updateField("education", index, "gpa", e.target.value)}
-                      />
-                    </div>
-                  </div>
-                </div>
-              ))}
-              <Button
-                variant="outline"
-                onClick={() =>
-                  addItem("education", {
-                    degree: "",
-                    institution: "",
-                    location: "",
-                    graduationDate: "",
-                    gpa: "",
-                  })
-                }
-              >
-                + Add Education
-              </Button>
-            </CardContent>
-          </Card>
-
-          {/* Certifications Section */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Certifications</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <Label>Certifications (comma separated)</Label>
-              <Input
-                value={
-                  Array.isArray(structuredData.certifications)
-                    ? structuredData.certifications.join(", ")
-                    : structuredData.certifications || ""
-                }
-                onChange={(e) => updateArrayField("certifications", e.target.value)}
-                placeholder="AWS Certified, Google Cloud Professional, ..."
-              />
-            </CardContent>
-          </Card>
-
-          {/* Languages Section */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Languages</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <Label>Languages (comma separated)</Label>
-              <Input
-                value={
-                  Array.isArray(structuredData.languages)
-                    ? structuredData.languages.join(", ")
-                    : structuredData.languages || ""
-                }
-                onChange={(e) => updateArrayField("languages", e.target.value)}
-                placeholder="English, Spanish, French, ..."
-              />
-            </CardContent>
-          </Card>
+                </CardContent>
+              </Card>
             </div>
           </div>
 
@@ -603,8 +748,12 @@ export default function EditPage() {
           <div className="lg:sticky lg:top-20 h-fit">
             <div className="bg-white rounded-lg shadow-lg p-4">
               <div className="mb-4 flex justify-between items-center">
-                <h2 className="text-xl font-semibold text-gray-800">Live Preview</h2>
-                <span className="text-xs text-gray-500">Updates as you type</span>
+                <h2 className="text-xl font-semibold text-gray-800">
+                  Live Preview
+                </h2>
+                <span className="text-xs text-gray-500">
+                  Updates as you type
+                </span>
               </div>
               <div className="border rounded-lg p-4 bg-gray-50 overflow-y-auto max-h-[calc(100vh-200px)]">
                 <ResumePreview data={structuredData} />
