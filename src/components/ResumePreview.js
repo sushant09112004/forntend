@@ -1,5 +1,6 @@
 "use client";
-
+import { MdOutlineMail,MdLocationOn  } from "react-icons/md";
+import { IoIosCall } from "react-icons/io";
 const ResumePreview = ({ data, format, sections = [] }) => {
   if (!data) return null;
 
@@ -34,13 +35,14 @@ const ResumePreview = ({ data, format, sections = [] }) => {
             </h1>
             <div className="flex flex-wrap gap-4 text-sm text-gray-600">
               {data.personalInfo.email && (
-                <span>📧 {data.personalInfo.email}</span>
+                <span className="flex items-center gap-1"><MdOutlineMail size={14} /> {data.personalInfo.email}</span>
               )}
               {data.personalInfo.phone && (
-                <span>📱 {data.personalInfo.phone}</span>
+                <span>
+                   {data.personalInfo.phone}</span>
               )}
               {data.personalInfo.location && (
-                <span>📍 {data.personalInfo.location}</span>
+                <span className="flex items-center gap-1"><MdLocationOn size={14} /> {data.personalInfo.location}</span>
               )}
               {data.personalInfo.linkedin && (
                 <span>💼 {data.personalInfo.linkedin}</span>

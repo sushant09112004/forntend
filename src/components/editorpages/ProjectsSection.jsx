@@ -1,13 +1,30 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { GeminieDialog } from "./Generalcomponents/GeminieDailog";
 
 export default function ProjectsSection({ structuredData, updateField, addItem, removeItem }) {
+  const [isOpen, setIsOpen] = useState(false);
+
   return (
-    <Card>
+    <div className="border-b border-gray-300 py-4">
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="flex justify-between items-center w-full text-left"
+      >
+        <span className="font-medium text-lg">Projects</span>
+        <span className="text-xl">{isOpen ? "-" : "+"}</span>
+      </button>
+
+      <div
+        className={`overflow-hidden transition-all duration-300 ${
+          isOpen ? "max-h-[1000px] mt-2" : "max-h-0"
+        }`}
+      >
+        <Card>
       <CardHeader>
         <CardTitle>Projects</CardTitle>
       </CardHeader>
@@ -24,7 +41,22 @@ export default function ProjectsSection({ structuredData, updateField, addItem, 
               />
             </div>
             <div>
-              <Label>Description</Label>
+              <div className="flex items-center justify-between gap-2">
+                <Label>Description</Label>
+                <GeminieDialog
+                  context={[
+                    project.name && `Project: ${project.name}`,
+                    project.description && `Current: ${project.description}`,
+                  ]
+                    .filter(Boolean)
+                    .join("\n")}
+                  onResult={(text) =>
+                    updateField("projects", index, "description", text)
+                  }
+                  placeholder="e.g. emphasize impact, add tech stack..."
+                  sectionLabel="Edit description with AI"
+                />
+              </div>
               <textarea
                 value={project.description || ""}
                 onChange={(e) =>
@@ -75,5 +107,7 @@ export default function ProjectsSection({ structuredData, updateField, addItem, 
         </Button>
       </CardContent>
     </Card>
+      </div>
+    </div>
   );
 }

@@ -6,6 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
+import { GripVertical } from "lucide-react";
 import ResumePreview from "@/components/ResumePreview";
 import Collapsiblebox from "@/components/editorpages/Collapsiblebox";
 import CollapsibleExperience from "@/components/editorpages/CollapsibleExperience";
@@ -16,14 +18,35 @@ import PersonalInfoSection from "@/components/editorpages/PersonalInfoSection";
 import EducationSection from "@/components/editorpages/EducationSection";
 import CertificationsSection from "@/components/editorpages/CertificationsSection";
 import LanguagesSection from "@/components/editorpages/LanguagesSection";
+import { SelectResumeFormat } from "@/components/editorpages/Generalcomponents/SelectResumeFormat";
+const DEFAULT_SECTION_ORDER = [
+  "personalInfo",
+  "summary",
+  "experience",
+  "projects",
+  "achievements",
+  "skills",
+  "education",
+  "certifications",
+  "languages",
+];
+
 export default function EditPage() {
   const router = useRouter();
   const [structuredData, setStructuredData] = useState(null);
+  const [sectionOrder, setSectionOrder] = useState(DEFAULT_SECTION_ORDER);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Get structured data from sessionStorage
+    // Get structured data and section order from sessionStorage
     if (typeof window !== "undefined") {
+      const orderStored = sessionStorage.getItem("resumeSectionOrder");
+      if (orderStored) {
+        try {
+          const parsed = JSON.parse(orderStored);
+          if (Array.isArray(parsed) && parsed.length) setSectionOrder(parsed);
+        } catch (_) {}
+      }
       const stored = sessionStorage.getItem("structuredResume");
       if (stored) {
         try {
@@ -49,16 +72,34 @@ export default function EditPage() {
     }
   }, []);
 
-  // Auto-save to sessionStorage whenever data changes
+  // Auto-save to sessionStorage whenever data or section order changes
   useEffect(() => {
     if (structuredData && typeof window !== "undefined") {
       sessionStorage.setItem(
         "structuredResume",
         JSON.stringify(structuredData),
       );
-      console.log(structuredData);
     }
   }, [structuredData]);
+
+  useEffect(() => {
+    if (sectionOrder.length && typeof window !== "undefined") {
+      sessionStorage.setItem("resumeSectionOrder", JSON.stringify(sectionOrder));
+    }
+  }, [sectionOrder]);
+
+  const onDragEnd = (result) => {
+    if (!result.destination) return;
+    const from = result.source.index;
+    const to = result.destination.index;
+    if (from === to) return;
+    setSectionOrder((prev) => {
+      const next = [...prev];
+      const [removed] = next.splice(from, 1);
+      next.splice(to, 0, removed);
+      return next;
+    });
+  };
 
   const updateField = (section, index, field, value) => {
     setStructuredData((prev) => {
@@ -199,12 +240,13 @@ export default function EditPage() {
               Edit Resume
             </h1>
             <div className="flex gap-2 flex-wrap">
-              <Button variant="outline" onClick={handleDownloadHTML} size="sm">
+              {/* <Button variant="outline" onClick={handleDownloadHTML} size="sm">
                 Download HTML
-              </Button>
+              </Button> */}
               <Button variant="outline" onClick={handleDownloadPDF} size="sm">
                 Download PDF
               </Button>
+              <SelectResumeFormat/>
               <Button
                 variant="outline"
                 onClick={() => router.push("/home")}
@@ -223,68 +265,120 @@ export default function EditPage() {
       {/* Two Column Layout */}
       <div className="max-w-7xl mx-auto px-4 md:px-8 py-6">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Left Column - Edit Form */}
-          <div className="space-y-6 overflow-y-auto max-h-[calc(100vh-120px)] pr-2">
-            <div className="grid gap-6">
-              {/* Summary Section */}
-             
-              <Collapsiblebox 
-                item={structuredData} 
-                onChange={(e) =>
-                  setStructuredData((prev) => ({
-                    ...prev,
-                    summary: e.target.value,
-                  }))
-                }
-              />
-              {/* Experience Section */}
-             
-              <CollapsibleExperience
-                structuredData={structuredData}
-                updateField={updateField}
-                addItem={addItem}
-                removeItem={removeItem}
-                />
-              {/* Projects Section */}
-              <ProjectsSection
-                structuredData={structuredData}
-                updateField={updateField}
-                addItem={addItem}
-                removeItem={removeItem}
-              />
-              {/* Achievements Section */}
-              <AchievementsSection
-                structuredData={structuredData}
-                updateArrayField={updateArrayField}
-              />
-              {/* Skills Section */}
-              <SkillsSection
-                structuredData={structuredData}
-                updateArrayField={updateArrayField}
-              />
-              {/* Personal Info Section */}
-              <PersonalInfoSection
-                structuredData={structuredData}
-                updateField={updateField}
-              />
-              {/* Education Section */}
-              <EducationSection
-                structuredData={structuredData}
-                updateField={updateField}
-                addItem={addItem}
-                removeItem={removeItem}
-              />
-              {/* Certifications Section */}
-              <CertificationsSection
-                structuredData={structuredData}
-                updateArrayField={updateArrayField}
-              />
-              {/* Languages Section */}
-              <LanguagesSection
-                structuredData={structuredData}
-                updateArrayField={updateArrayField}
-              />
-            </div>
+          {/* Left Column - Edit Form (drag to reorder; order sets preview order) */}
+          <div className="overflow-y-auto max-h-[calc(100vh-120px)] pr-2">
+            <DragDropContext onDragEnd={onDragEnd}>
+              <Droppable droppableId="edit-sections">
+                {(provided) => (
+                  <div
+                    className="grid gap-6"
+                    ref={provided.innerRef}
+                    {...provided.droppableProps}
+                  >
+                    {sectionOrder.map((sectionId, index) => (
+                      <Draggable
+                        key={sectionId}
+                        draggableId={sectionId}
+                        index={index}
+                      >
+                        {(provided, snapshot) => (
+                          <div
+                            ref={provided.innerRef}
+                            {...provided.draggableProps}
+                            className={`rounded-lg transition-shadow ${
+                              snapshot.isDragging ? "shadow-lg bg-white/80" : ""
+                            }`}
+                          >
+                            <div
+                              {...provided.dragHandleProps}
+                              className="flex items-center gap-2 py-1 -mb-1 cursor-grab active:cursor-grabbing text-gray-400 hover:text-gray-600 touch-none"
+                              aria-label="Drag to reorder section"
+                            >
+                              <GripVertical className="h-4 w-4 shrink-0" />
+                              <span className="text-xs font-medium text-gray-500">
+                                Drag to reorder
+                              </span>
+                            </div>
+                            {sectionId === "summary" && (
+                              <Collapsiblebox
+                                item={structuredData}
+                                onChange={(e) =>
+                                  setStructuredData((prev) => ({
+                                    ...prev,
+                                    summary: e.target.value,
+                                  }))
+                                }
+                                onAiResult={(text) =>
+                                  setStructuredData((prev) => ({
+                                    ...prev,
+                                    summary: text,
+                                  }))
+                                }
+                              />
+                            )}
+                            {sectionId === "experience" && (
+                              <CollapsibleExperience
+                                structuredData={structuredData}
+                                updateField={updateField}
+                                addItem={addItem}
+                                removeItem={removeItem}
+                              />
+                            )}
+                            {sectionId === "projects" && (
+                              <ProjectsSection
+                                structuredData={structuredData}
+                                updateField={updateField}
+                                addItem={addItem}
+                                removeItem={removeItem}
+                              />
+                            )}
+                            {sectionId === "achievements" && (
+                              <AchievementsSection
+                                structuredData={structuredData}
+                                updateArrayField={updateArrayField}
+                              />
+                            )}
+                            {sectionId === "skills" && (
+                              <SkillsSection
+                                structuredData={structuredData}
+                                updateArrayField={updateArrayField}
+                              />
+                            )}
+                            {sectionId === "personalInfo" && (
+                              <PersonalInfoSection
+                                structuredData={structuredData}
+                                updateField={updateField}
+                              />
+                            )}
+                            {sectionId === "education" && (
+                              <EducationSection
+                                structuredData={structuredData}
+                                updateField={updateField}
+                                addItem={addItem}
+                                removeItem={removeItem}
+                              />
+                            )}
+                            {sectionId === "certifications" && (
+                              <CertificationsSection
+                                structuredData={structuredData}
+                                updateArrayField={updateArrayField}
+                              />
+                            )}
+                            {sectionId === "languages" && (
+                              <LanguagesSection
+                                structuredData={structuredData}
+                                updateArrayField={updateArrayField}
+                              />
+                            )}
+                          </div>
+                        )}
+                      </Draggable>
+                    ))}
+                    {provided.placeholder}
+                  </div>
+                )}
+              </Droppable>
+            </DragDropContext>
           </div>
 
           {/* Right Column - Live Preview */}
@@ -299,7 +393,7 @@ export default function EditPage() {
                 </span>
               </div>
               <div className="border rounded-lg p-4 bg-gray-50 overflow-y-auto max-h-[calc(100vh-200px)]">
-                <ResumePreview data={structuredData} />
+                <ResumePreview data={structuredData} sectionOrder={sectionOrder} />
               </div>
             </div>
           </div>

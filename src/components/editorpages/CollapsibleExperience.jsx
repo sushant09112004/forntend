@@ -4,13 +4,12 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
-
+import { GeminieDialog } from "./Generalcomponents/GeminieDailog";
 export default function CollapsibleExperience({
   structuredData,
   updateField,
   addItem,
   removeItem,
-  onChange,
 }) {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -27,11 +26,10 @@ export default function CollapsibleExperience({
       <div
         className={`overflow-hidden transition-all duration-300 ${
           isOpen ? "max-h-[1000px] mt-2" : "max-h-0"
-
         }`}
       >
         <Card>
-          <CardHeader>
+            <CardHeader>
             <CardTitle>Experience</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -112,7 +110,23 @@ export default function CollapsibleExperience({
                   </div>
                 </div>
                 <div>
-                  <Label>Description</Label>
+                  <div className="flex items-center justify-between gap-2">
+                    <Label>Description</Label>
+                    <GeminieDialog
+                      context={[
+                        exp.title && `Role: ${exp.title}`,
+                        exp.company && `Company: ${exp.company}`,
+                        exp.description && `Current: ${exp.description}`,
+                      ]
+                        .filter(Boolean)
+                        .join("\n")}
+                      onResult={(text) =>
+                        updateField("experience", index, "description", text)
+                      }
+                      placeholder="e.g. emphasize leadership, add metrics..."
+                      sectionLabel="Edit description with AI"
+                    />
+                  </div>
                   <textarea
                     value={exp.description || ""}
                     onChange={(e) =>

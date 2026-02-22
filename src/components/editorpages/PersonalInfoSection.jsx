@@ -1,12 +1,28 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 
 export default function PersonalInfoSection({ structuredData, updateField }) {
+  const [isOpen, setIsOpen] = useState(false);
+
   return (
-    <Card>
+    <div className="border-b border-gray-300 py-4">
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="flex justify-between items-center w-full text-left"
+      >
+        <span className="font-medium text-lg">Personal Information</span>
+        <span className="text-xl">{isOpen ? "-" : "+"}</span>
+      </button>
+
+      <div
+        className={`overflow-hidden transition-all duration-300 ${
+          isOpen ? "max-h-[1000px] mt-2" : "max-h-0"
+        }`}
+      >
+        <Card>
       <CardHeader>
         <CardTitle>Personal Information</CardTitle>
       </CardHeader>
@@ -76,5 +92,7 @@ export default function PersonalInfoSection({ structuredData, updateField }) {
         </div>
       </CardContent>
     </Card>
+      </div>
+    </div>
   );
 }

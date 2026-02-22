@@ -1,11 +1,27 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 
 export default function AchievementsSection({ structuredData, updateArrayField }) {
+  const [isOpen, setIsOpen] = useState(false);
+
   return (
-    <Card>
+    <div className="border-b border-gray-300 py-4">
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="flex justify-between items-center w-full text-left"
+      >
+        <span className="font-medium text-lg">Achievements</span>
+        <span className="text-xl">{isOpen ? "-" : "+"}</span>
+      </button>
+
+      <div
+        className={`overflow-hidden transition-all duration-300 ${
+          isOpen ? "max-h-[1000px] mt-2" : "max-h-0"
+        }`}
+      >
+        <Card>
       <CardHeader>
         <CardTitle>Achievements</CardTitle>
       </CardHeader>
@@ -32,5 +48,7 @@ export default function AchievementsSection({ structuredData, updateArrayField }
         />
       </CardContent>
     </Card>
+      </div>
+    </div>
   );
 }
