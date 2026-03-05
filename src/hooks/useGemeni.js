@@ -81,13 +81,13 @@ IMPORTANT:
 
     try {
       const response = await getGemeniResponse(prompt);
-      
+
       // Try to extract JSON from response
       let jsonText = response
         .replace(/```json\n?/g, "")
         .replace(/```\n?/g, "")
         .trim();
-      
+
       // Find JSON object in response
       const jsonMatch = jsonText.match(/\{[\s\S]*\}/);
       if (jsonMatch) {
@@ -95,14 +95,32 @@ IMPORTANT:
       }
 
       const structuredData = JSON.parse(jsonText);
-      
-      // Ensure all required fields exist
+
+      // Normalize data to the richer resume structure
       return {
+        personalInfo: structuredData.personalInfo || {},
         summary: structuredData.summary || "",
-        experience: Array.isArray(structuredData.experience) ? structuredData.experience : [],
-        projects: Array.isArray(structuredData.projects) ? structuredData.projects : [],
-        achievements: Array.isArray(structuredData.achievements) ? structuredData.achievements : [],
-        skills: Array.isArray(structuredData.skills) ? structuredData.skills : [],
+        experience: Array.isArray(structuredData.experience)
+          ? structuredData.experience
+          : [],
+        projects: Array.isArray(structuredData.projects)
+          ? structuredData.projects
+          : [],
+        achievements: Array.isArray(structuredData.achievements)
+          ? structuredData.achievements
+          : [],
+        skills: Array.isArray(structuredData.skills)
+          ? structuredData.skills
+          : [],
+        education: Array.isArray(structuredData.education)
+          ? structuredData.education
+          : [],
+        certifications: Array.isArray(structuredData.certifications)
+          ? structuredData.certifications
+          : [],
+        languages: Array.isArray(structuredData.languages)
+          ? structuredData.languages
+          : [],
       };
     } catch (err) {
       console.error("Error structuring resume:", err);
