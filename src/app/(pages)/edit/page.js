@@ -36,6 +36,7 @@ export default function EditPage() {
   const [structuredData, setStructuredData] = useState(null);
   const [sectionOrder, setSectionOrder] = useState(DEFAULT_SECTION_ORDER);
   const [loading, setLoading] = useState(true);
+  const [originalText, setOriginalText] = useState("");
 
   useEffect(() => {
     // Get structured data and section order from sessionStorage
@@ -67,6 +68,10 @@ export default function EditPage() {
         } catch (err) {
           console.error("Error parsing structured data:", err);
         }
+      }
+      const storedOriginal = sessionStorage.getItem("originalText");
+      if (storedOriginal) {
+        setOriginalText(storedOriginal);
       }
       setLoading(false);
     }
@@ -147,12 +152,56 @@ export default function EditPage() {
     }));
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (typeof window !== "undefined") {
       sessionStorage.setItem(
         "structuredResume",
         JSON.stringify(structuredData),
       );
+
+      const token = localStorage.getItem("token");
+      if (token && structuredData) {
+        const apiUrl =
+          process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api";
+
+        const historyPayload = {
+          personalInfo: structuredData.personalInfo || {},
+          summary: structuredData.summary || "",
+          experience: Array.isArray(structuredData.experience)
+            ? structuredData.experience
+            : [],
+          education: Array.isArray(structuredData.education)
+            ? structuredData.education
+            : [],
+          skills: Array.isArray(structuredData.skills)
+            ? structuredData.skills
+            : [],
+          projects: Array.isArray(structuredData.projects)
+            ? structuredData.projects
+            : [],
+          certifications: Array.isArray(structuredData.certifications)
+            ? structuredData.certifications
+            : [],
+          languages: Array.isArray(structuredData.languages)
+            ? structuredData.languages
+            : [],
+          originalText: originalText || "",
+        };
+
+        try {
+          await fetch(`${apiUrl}/history`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify(historyPayload),
+          });
+        } catch (err) {
+          console.error("Error saving history:", err);
+        }
+      }
+
       alert("Resume saved successfully!");
     }
   };
