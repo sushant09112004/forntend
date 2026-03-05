@@ -54,7 +54,7 @@ export default function Page() {
         {/* Not Decided */}
         <Card className="hover:shadow-lg transition cursor-pointer">
           <CardHeader>
-            <CardTitle>Not Decided Yet</CardTitle>
+            <CardTitle>Upload Linkden PDF</CardTitle>
             <CardDescription>Explore options and decide later</CardDescription>
           </CardHeader>
           <CardContent>

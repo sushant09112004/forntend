@@ -13,6 +13,7 @@ import {
   PieChart,
   Settings2,
   SquareTerminal,
+  history
 } from "lucide-react"
 
 import { NavMain } from "@/components/nav-main"
@@ -29,9 +30,11 @@ import {
 
 // This is sample data.
 const data = {
+
+  
   teams: [
     {
-      name: "Acme Inc",
+      name: "ResumeSync",
       logo: GalleryVerticalEnd,
       plan: "Enterprise",
     },
@@ -48,7 +51,7 @@ const data = {
   ],
   navMain: [
     {
-      title: "Playground",
+      title: "Build Your Resume",
       url: "#",
       icon: SquareTerminal,
       isActive: true,
@@ -68,7 +71,7 @@ const data = {
       // ],
     },
     {
-      title: "Models",
+      title: "Build Your Cover Letter",
       url: "#",
       icon: Bot,
       items: [

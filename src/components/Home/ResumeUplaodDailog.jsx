@@ -84,15 +84,41 @@ export default function ResumeUploadDialog() {
       
       console.log("🤖 Structuring resume with Gemini...")
       const structuredData = await structureResume(text)
-      
+
       console.log("✅ Structured Data:", structuredData)
-      
+
       // Store structured data in sessionStorage for edit page
       if (typeof window !== "undefined") {
-        sessionStorage.setItem("structuredResume", JSON.stringify(structuredData))
+        const normalizedData = {
+          personalInfo: structuredData.personalInfo || {},
+          summary: structuredData.summary || "",
+          experience: Array.isArray(structuredData.experience)
+            ? structuredData.experience
+            : [],
+          projects: Array.isArray(structuredData.projects)
+            ? structuredData.projects
+            : [],
+          achievements: Array.isArray(structuredData.achievements)
+            ? structuredData.achievements
+            : [],
+          skills: Array.isArray(structuredData.skills)
+            ? structuredData.skills
+            : [],
+          education: Array.isArray(structuredData.education)
+            ? structuredData.education
+            : [],
+          certifications: Array.isArray(structuredData.certifications)
+            ? structuredData.certifications
+            : [],
+          languages: Array.isArray(structuredData.languages)
+            ? structuredData.languages
+            : [],
+        }
+
+        sessionStorage.setItem("structuredResume", JSON.stringify(normalizedData))
         sessionStorage.setItem("originalText", text)
       }
-      
+
       // Navigate to edit page after a short delay
       setTimeout(() => {
         router.push("/edit")
