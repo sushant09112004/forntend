@@ -53,7 +53,7 @@ export const useGeneralPurposeAI = () => {
       const result = await res.json();
 
       if (!res.ok || !result.success) {
-        throw new Error(result.message || "Something went wrong");
+        throw new Error(result.message || result.error || "Something went wrong");
       }
 
       setData(result.response);

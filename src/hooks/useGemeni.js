@@ -24,7 +24,7 @@ export const useGemeni = () => {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.message || "Failed to get Gemini response");
+        throw new Error(data.message || data.error || "Failed to get Gemini response");
       }
 
       if (data.success) {
