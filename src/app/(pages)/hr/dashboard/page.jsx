@@ -1,4 +1,7 @@
+"use client";
+
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 const actions = [
   {
@@ -28,19 +31,42 @@ const actions = [
 ];
 
 export default function HRDashboardPage() {
+  const router = useRouter();
+
+  const handleLogout = () => {
+    if (typeof window !== "undefined") {
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+      localStorage.removeItem("role");
+      window.dispatchEvent(new Event("userUpdated"));
+    }
+    router.push("/hr/login");
+  };
   return (
     <div className="min-h-screen bg-white text-black">
       <div className="mx-auto flex min-h-screen max-w-6xl flex-col justify-center px-6 py-16">
-        <div className="mb-10 text-center">
-          <p className="mb-3 inline-flex rounded-full border border-black/15 bg-black/5 px-3 py-1 text-sm font-medium text-black">
-            HR Dashboard
-          </p>
-          <h1 className="text-4xl font-semibold tracking-tight text-black sm:text-5xl">
-            Welcome back, HR Team
-          </h1>
-          <p className="mx-auto mt-4 max-w-2xl text-lg text-gray-700">
-            Manage hiring actions in one place with a clean, simple frontend experience.
-          </p>
+        <div className="mb-10">
+          <div className="flex items-start justify-between">
+            <div className="text-center md:text-left">
+              <p className="mb-3 inline-flex rounded-full border border-black/15 bg-black/5 px-3 py-1 text-sm font-medium text-black">
+                HR Dashboard
+              </p>
+              <h1 className="text-4xl font-semibold tracking-tight text-black sm:text-5xl">
+                Welcome back, HR Team
+              </h1>
+              <p className="mx-auto mt-4 max-w-2xl text-lg text-gray-700">
+                Manage hiring actions in one place with a clean, simple frontend experience.
+              </p>
+            </div>
+            <div>
+              <button
+                onClick={handleLogout}
+                className="rounded-full border border-black/10 bg-white px-4 py-2 text-sm font-medium text-black hover:bg-gray-50"
+              >
+                Logout
+              </button>
+            </div>
+          </div>
         </div>
 
         <div className="grid gap-6 md:grid-cols-3">
