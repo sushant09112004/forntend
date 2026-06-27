@@ -81,9 +81,9 @@ export function HRLoginForm({ className, ...props }) {
         setSuccessMessage(
           `HR account created. Your email: ${data.user.generatedemail}`
         );
-        setTimeout(() => router.push("/dashboard"), 1500);
+        setTimeout(() => router.push("/hr/dashboard"), 1500);
       } else {
-        router.push("/dashboard");
+        router.push("/hr/dashboard");
       }
     } catch (err) {
       setError(err.message || "Something went wrong. Please try again.");

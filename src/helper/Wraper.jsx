@@ -19,8 +19,11 @@ import {
 
 function Wraper({children}) {
   const pathname = usePathname()
-  const hideSidebarRoutes = ['/', '/login', '/signup', '/hr/login']
-  const shouldHideSidebar = hideSidebarRoutes.includes(pathname)
+  const hideSidebarRoutes = ['/', '/login', '/signup']
+  const shouldHideSidebar = 
+    hideSidebarRoutes.includes(pathname) || 
+    pathname === '/hr' || 
+    pathname.startsWith('/hr/')
 
   if (shouldHideSidebar) {
     return <>{children}</>
