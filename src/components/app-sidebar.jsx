@@ -13,7 +13,8 @@ import {
   PieChart,
   Settings2,
   SquareTerminal,
-  history
+  History  ,
+  Home
 } from "lucide-react"
 
 import { NavMain } from "@/components/nav-main"
@@ -51,78 +52,46 @@ const data = {
   ],
   navMain: [
     {
-      title: "Build Your Resume",
-      url: "#",
-      icon: SquareTerminal,
+      title: "Home",
+      url: "/home",
+      icon: Home,
       isActive: true,
-      // items: [
-      //   {
-      //     title: "History",
-      //     url: "#",
-      //   },
-      //   {
-      //     title: "Starred",
-      //     url: "#",
-      //   },
-      //   {
-      //     title: "Settings",
-      //     url: "#",
-      //   },
-      // ],
     },
     {
-      title: "Build Your Cover Letter",
-      url: "#",
-      icon: Bot,
-      items: [
-        {
-          title: "Genesis",
-          url: "#",
-        },
-        {
-          title: "Explorer",
-          url: "#",
-        },
-        {
-          title: "Quantum",
-          url: "#",
-        },
-      ],
+      title: "History",
+      url: "/history",
+      icon: History,
     },
     {
-      title: "Documentation",
+      title: "Resumes",
       url: "#",
       icon: BookOpen,
       items: [
         {
-          title: "Introduction",
+          title: "Roast My Resume",
           url: "#",
         },
         {
-          title: "Get Started",
+          title: "Build Resume",
           url: "#",
         },
         {
-          title: "Tutorials",
-          url: "#",
-        },
-        {
-          title: "Changelog",
+          title: "Available Templates",
           url: "#",
         },
       ],
     },
     {
-      title: "Settings",
+      title: "Email",
       url: "#",
       icon: Settings2,
       items: [
         {
-          title: "General",
+          title: "Genrate Email",
           url: "#",
         },
         {
-          title: "Team",
+          title: "Saved Templates",
           url: "#",
         },
         {
