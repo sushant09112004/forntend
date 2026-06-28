@@ -18,7 +18,9 @@ import LoginImage from "@/assests/Images/Login.png";
 
 export function HRLoginForm({ className, ...props }) {
   const router = useRouter();
-  const [username, setUsername] = useState("");
+  const [name, setName] = useState("");
+  const [company, setCompany] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [isRegister, setIsRegister] = useState(false);
@@ -26,17 +28,24 @@ export function HRLoginForm({ className, ...props }) {
   const [error, setError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
 
-  const generatedEmailPreview = username.trim()
-    ? `${username.trim().toLowerCase()}@resumesync.email.com`
-    : "username@resumesync.email.com";
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
     setSuccessMessage("");
 
-    if (!username.trim()) {
-      setError("Username is required");
+    if (isRegister) {
+      if (!name.trim()) {
+        setError("Name is required");
+        return;
+      }
+      if (!company.trim()) {
+        setError("Company is required");
+        return;
+      }
+    }
+
+    if (!email.trim()) {
+      setError("Email is required");
       return;
     }
 
@@ -56,12 +65,16 @@ export function HRLoginForm({ className, ...props }) {
         process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api";
       const endpoint = isRegister ? "/hr/register" : "/hr/login";
 
+      const bodyPayload = isRegister
+        ? { name, company, email, password }
+        : { email, password };
+
       const res = await fetch(`${apiUrl}${endpoint}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ username, password }),
+        body: JSON.stringify(bodyPayload),
       });
 
       const data = await res.json();
@@ -79,7 +92,7 @@ export function HRLoginForm({ className, ...props }) {
 
       if (isRegister) {
         setSuccessMessage(
-          `HR account created. Your email: ${data.user.generatedemail}`
+          `HR account created. Welcome, ${data.user.name}!`
         );
         setTimeout(() => router.push("/hr/dashboard"), 1500);
       } else {
@@ -109,20 +122,57 @@ export function HRLoginForm({ className, ...props }) {
                 </p>
               </div>
 
-              <Field>
-                <FieldLabel htmlFor="hr-username">Username</FieldLabel>
-                <Input
-                  id="hr-username"
-                  type="text"
-                  placeholder="yourname"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                  required
-                />
-                <FieldDescription>
-                  Generated email: {generatedEmailPreview}
-                </FieldDescription>
-              </Field>
+              {isRegister ? (
+                <>
+                  <Field>
+                    <FieldLabel htmlFor="hr-name">Full Name</FieldLabel>
+                    <Input
+                      id="hr-name"
+                      type="text"
+                      placeholder="John Doe"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      required
+                    />
+                  </Field>
+
+                  <Field>
+                    <FieldLabel htmlFor="hr-company">Company</FieldLabel>
+                    <Input
+                      id="hr-company"
+                      type="text"
+                      placeholder="Google"
+                      value={company}
+                      onChange={(e) => setCompany(e.target.value)}
+                      required
+                    />
+                  </Field>
+
+                  <Field>
+                    <FieldLabel htmlFor="hr-email">Email</FieldLabel>
+                    <Input
+                      id="hr-email"
+                      type="email"
+                      placeholder="hr@company.com"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      required
+                    />
+                  </Field>
+                </>
+              ) : (
+                <Field>
+                  <FieldLabel htmlFor="hr-email">Email</FieldLabel>
+                  <Input
+                    id="hr-email"
+                    type="email"
+                    placeholder="hr@company.com"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                  />
+                </Field>
+              )}
 
               <Field>
                 <FieldLabel htmlFor="hr-password">Password</FieldLabel>
@@ -184,6 +234,10 @@ export function HRLoginForm({ className, ...props }) {
                       onClick={() => {
                         setIsRegister(false);
                         setError("");
+                        setName("");
+                        setCompany("");
+                        setEmail("");
+                        setPassword("");
                         setConfirmPassword("");
                       }}
                     >
@@ -199,6 +253,11 @@ export function HRLoginForm({ className, ...props }) {
                       onClick={() => {
                         setIsRegister(true);
                         setError("");
+                        setName("");
+                        setCompany("");
+                        setEmail("");
+                        setPassword("");
+                        setConfirmPassword("");
                       }}
                     >
                       Register

@@ -130,16 +130,23 @@ export default function HRPersonalPage() {
           {!loading && !error && profile && (
             <div className="space-y-4">
               <div className="rounded-xl border border-black/10 bg-black/5 p-4">
-                <p className="text-sm font-medium text-gray-600">Generated Email</p>
-                <p className="mt-1 break-all text-base font-semibold text-black">
-                  {profile.generatedemail}
+                <p className="text-sm font-medium text-gray-600">Name</p>
+                <p className="mt-1 text-base font-semibold text-black">
+                  {profile.name}
                 </p>
               </div>
 
               <div className="rounded-xl border border-black/10 bg-black/5 p-4">
-                <p className="text-sm font-medium text-gray-600">Username</p>
+                <p className="text-sm font-medium text-gray-600">Company</p>
                 <p className="mt-1 text-base font-semibold text-black">
-                  {profile.username}
+                  {profile.company}
+                </p>
+              </div>
+
+              <div className="rounded-xl border border-black/10 bg-black/5 p-4">
+                <p className="text-sm font-medium text-gray-600">Email</p>
+                <p className="mt-1 break-all text-base font-semibold text-black">
+                  {profile.email}
                 </p>
               </div>
 
@@ -147,6 +154,13 @@ export default function HRPersonalPage() {
                 <p className="text-sm font-medium text-gray-600">Role</p>
                 <p className="mt-1 text-base font-semibold text-black">
                   {profile.role}
+                </p>
+              </div>
+
+              <div className="rounded-xl border border-black/10 bg-black/5 p-4">
+                <p className="text-sm font-medium text-gray-600">Status</p>
+                <p className="mt-1 text-base font-semibold text-black">
+                  {profile.status}
                 </p>
               </div>
             </div>
