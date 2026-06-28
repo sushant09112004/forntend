@@ -66,10 +66,11 @@ const data = {
       title: "Resumes",
       url: "#",
       icon: BookOpen,
+      isActive: true,
       items: [
         {
           title: "Roast My Resume",
-          url: "#",
+          url: "/roastme",
         },
         {
           title: "Build Resume",
@@ -85,14 +86,15 @@ const data = {
       title: "Email",
       url: "#",
       icon: Settings2,
+      isActive: true,
       items: [
         {
-          title: "Genrate Email",
-          url: "#",
+          title: "Generate Email",
+          url: "/genemail",
         },
         {
           title: "Saved Templates",
-          url: "#",
+          url: "/emailsave",
         },
         {
           title: "Billing",
@@ -105,23 +107,23 @@ const data = {
       ],
     },
   ],
-  projects: [
-    {
-      name: "Design Engineering",
-      url: "#",
-      icon: Frame,
-    },
-    {
-      name: "Sales & Marketing",
-      url: "#",
-      icon: PieChart,
-    },
-    {
-      name: "Travel",
-      url: "#",
-      icon: Map,
-    },
-  ],
+  // projects: [
+  //   {
+  //     name: "Design Engineering",
+  //     url: "#",
+  //     icon: Frame,
+  //   },
+  //   {
+  //     name: "Sales & Marketing",
+  //     url: "#",
+  //     icon: PieChart,
+  //   },
+  //   {
+  //     name: "Travel",
+  //     url: "#",
+  //     icon: Map,
+  //   },
+  // ],
 }
 
 export function AppSidebar({
@@ -192,7 +194,7 @@ export function AppSidebar({
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={data.navMain} />
-        <NavProjects projects={data.projects} />
+        {/* <NavProjects projects={data.projects} /> */}
       </SidebarContent>
       <SidebarFooter>
         <NavUser user={user} />

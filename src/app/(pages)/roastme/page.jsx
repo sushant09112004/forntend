@@ -76,8 +76,7 @@ export default function Page() {
         <div className="mb-8">
           <h1 className="text-4xl font-semibold text-slate-900">Roast My Resume</h1>
           <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-600">
-            Enter the job description and upload your resume PDF. The backend will extract the resume text, then send it to the RoastMe prompt engine for a mild roast with actionable improvement advice.
-          </p>
+Enter the job description and upload your resume PDF. ResumeSync will intelligently extract your resume content, analyze it against the job description, and provide actionable improvement suggestions          </p>
         </div>
 
         <form onSubmit={handleSubmit} className="grid gap-6">
