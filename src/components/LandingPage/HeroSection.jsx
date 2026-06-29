@@ -2,46 +2,65 @@
 
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Sparkles, FileCheck, Lock } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 
 export default function HeroSection() {
-  const trustItems = [
-    { icon: Sparkles, label: "AI Powered" },
-    { icon: FileCheck, label: "ATS Optimized" },
-    { icon: Lock, label: "Secure & Private" },
-  ];
-
   return (
-    <section className="relative bg-white text-black py-16 md:py-24 px-4 overflow-hidden">
-      <div className="max-w-5xl mx-auto text-center">
-        <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight text-black max-w-4xl mx-auto leading-tight">
-          Sync Your Resume With Any Job Description in Seconds
+    <section className="relative bg-white px-4 pb-20 pt-20 md:pb-32 md:pt-28">
+      <div className="mx-auto max-w-4xl text-center">
+        {/* Badge */}
+        <div className="mb-8 inline-flex items-center rounded-full border border-gray-200 bg-gray-50 px-4 py-1.5 text-xs font-medium tracking-wide text-gray-600">
+          AI-Powered Resume Platform
+        </div>
+
+        {/* Headline */}
+        <h1 className="text-4xl font-bold leading-[1.1] tracking-tight text-black sm:text-5xl md:text-6xl lg:text-7xl">
+          Your resume,{" "}
+          <span className="block">perfectly synced.</span>
         </h1>
-        <p className="mt-6 text-lg sm:text-xl text-gray-700 max-w-2xl mx-auto leading-relaxed">
-          ResumeSync uses AI to analyze your resume against job descriptions,
-          optimize keywords, improve ATS compatibility, and increase your
-          interview chances.
+
+        {/* Subtitle */}
+        <p className="mx-auto mt-6 max-w-xl text-lg leading-relaxed text-gray-500 sm:text-xl">
+          Match your resume to any job description. Optimize for ATS.
+          Get hired faster. Built for candidates and HR teams.
         </p>
-        <div className="mt-10 flex flex-col sm:flex-row gap-4 justify-center items-center">
-          <Button asChild size="lg" className="rounded-lg px-8 text-base font-semibold bg-black hover:bg-gray-800 text-white">
-            <Link href="/home">Upload Resume</Link>
+
+        {/* CTA Buttons */}
+        <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
+          <Button
+            asChild
+            size="lg"
+            className="h-12 rounded-full bg-black px-8 text-base font-semibold text-white hover:bg-gray-800"
+          >
+            <Link href="/signup">
+              Get Started Free
+              <ArrowRight className="ml-2 size-4" />
+            </Link>
           </Button>
-          <Button asChild variant="outline" size="lg" className="rounded-lg px-8 text-base font-semibold border-2 border-black text-black hover:bg-gray-100">
-            <Link href="/home">Try Free Now</Link>
+          <Button
+            asChild
+            variant="outline"
+            size="lg"
+            className="h-12 rounded-full border-2 border-black px-8 text-base font-semibold text-black hover:bg-gray-50"
+          >
+            <Link href="/hr/login">HR Portal</Link>
           </Button>
         </div>
-        <div className="mt-14 flex flex-wrap justify-center gap-6">
-          {trustItems.map(({ icon: Icon, label }) => (
-            <div
-              key={label}
-              className="flex items-center gap-2 text-gray-700 font-medium"
-            >
-              <div className="flex h-9 w-9 items-center justify-center rounded-lg border border-gray-200 bg-gray-50">
-                <Icon className="h-4 w-4 text-black" />
-              </div>
-              <span>{label}</span>
-            </div>
-          ))}
+
+        {/* Stats */}
+        <div className="mx-auto mt-16 flex max-w-md justify-center gap-12 border-t border-gray-100 pt-8">
+          <div className="text-center">
+            <p className="text-2xl font-bold text-black">10K+</p>
+            <p className="mt-1 text-xs font-medium text-gray-400">Resumes Optimized</p>
+          </div>
+          <div className="text-center">
+            <p className="text-2xl font-bold text-black">95%</p>
+            <p className="mt-1 text-xs font-medium text-gray-400">ATS Pass Rate</p>
+          </div>
+          <div className="text-center">
+            <p className="text-2xl font-bold text-black">3x</p>
+            <p className="mt-1 text-xs font-medium text-gray-400">More Interviews</p>
+          </div>
         </div>
       </div>
     </section>
